@@ -22,8 +22,10 @@ public class CanvasManager : MonoBehaviour
 
     public Image imageCoolDown;
     public float cooldown = 5;
-    bool isCoolDown;
+    bool isCoolDown = true;
+    bool spawning;
     Queue units;
+
 
     bool queueIsDone;
 
@@ -31,16 +33,17 @@ public class CanvasManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       units = new Queue();
+        units = new Queue();
 
         clickButton();
-       
+
     }
 
     private void Update()
     {
         // as long as times are in the queue , get the first item and then invoke it 5s - after 5s dequeue / repeat.
-        if (isCoolDown)
+
+        if (spawning == true)
         {
             imageCoolDown.fillAmount += 1 / cooldown * Time.deltaTime;
         }
@@ -72,10 +75,11 @@ public class CanvasManager : MonoBehaviour
 
             temp.AddForce(spawnLocation.forward * unitSpeed, ForceMode.Impulse);
 
+
             imageCoolDown.fillAmount = 0;
-            isCoolDown = false;
-           
             units.Dequeue();
+            isCoolDown = true;
+            spawning = false;
             Debug.Log("Unit 1 Left Queue");
         }
 
@@ -83,16 +87,17 @@ public class CanvasManager : MonoBehaviour
 
     void Loading1()
     {
-        Invoke("spawnUnit1", 1);
         units.Enqueue(Unit1Prefab);
         Debug.Log("Unit 1 In Queue");
-       
-        isCoolDown = true;
 
         if (isCoolDown)
         {
+            spawning = true;
+            isCoolDown = false;
+            Invoke("spawnUnit1", 1);
             imageCoolDown.fillAmount += 1 / cooldown * Time.deltaTime;
         }
+        
     }
 
 
@@ -105,24 +110,27 @@ public class CanvasManager : MonoBehaviour
             temp.AddForce(spawnLocation.forward * unitSpeed, ForceMode.Impulse);
 
             imageCoolDown.fillAmount = 0;
-            isCoolDown = false;
-           
             units.Dequeue();
+            isCoolDown = true;
+            spawning = false;
             Debug.Log("Unit 2 Left Queue");
         }
     }
     void Loading2()
     {
-        Invoke("spawnUnit2", 3);
+
         units.Enqueue(Unit2Prefab);
         Debug.Log("Unit 2 In Queue");
-        
-        isCoolDown = true;
+
 
         if (isCoolDown)
         {
+            spawning = true;
+            isCoolDown = false;
+            Invoke("spawnUnit2", 3);
             imageCoolDown.fillAmount += 1 / cooldown * Time.deltaTime;
         }
+      
     }
 
     void spawnUnit3()
@@ -134,27 +142,45 @@ public class CanvasManager : MonoBehaviour
             temp.AddForce(spawnLocation.forward * unitSpeed, ForceMode.Impulse);
 
             imageCoolDown.fillAmount = 0;
-            isCoolDown = false;
-          
             units.Dequeue();
+            isCoolDown = true;
+            spawning = false;
             Debug.Log("Unit 3 Left Queue");
         }
     }
 
     void Loading3()
-    { 
-        Invoke("spawnUnit3", 5);
+    {
         units.Enqueue(Unit3Prefab);
         Debug.Log("Unit 3 In Queue");
-       
-        isCoolDown = true;
 
         if (isCoolDown)
         {
+            spawning = true;
+            isCoolDown = false;
+            Invoke("spawnUnit3", 5);
             imageCoolDown.fillAmount += 1 / cooldown * Time.deltaTime;
         }
+        
     }
-    
+
+    void checkQueue()
+    {
+        if (units.Peek().Equals(Unit1Prefab))
+        {
+            spawnUnit1();
+  
+        }
+        else if (units.Peek().Equals(Unit2Prefab))
+        {
+            spawnUnit2();
+        }
+        else if (units.Peek().Equals(Unit3Prefab))
+        {
+            Loading3();
+        }
+
+    }
 }
 
 
